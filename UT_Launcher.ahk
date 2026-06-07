@@ -25,7 +25,7 @@ if not A_IsAdmin {
     ExitApp
 }
 
-PS_SCRIPT := "D:\Dropbox\Computing1\BatchFiles_Scripts\PowershellScripts\Set-I226VProfile.ps1"
+PS_SCRIPT := A_ScriptDir . "\Set-I226VProfile.ps1"
 UT_EXE    := "C:\UnrealTournament\System\UnrealTournament.exe"
 
 ; ── STEP 1: Disable Nagle's Algorithm ──────────────────────────────────────
