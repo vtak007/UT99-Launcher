@@ -93,8 +93,8 @@ CloseAllApps() {
     SafeList .= "|obs64.exe"            ; OBS Studio
 
     ; --- Close system tray apps ---
-    Process, Close, phraseexpress.exe
-    Process, Close, Dropbox.exe
+    RunWait, taskkill /F /IM phraseexpress.exe,,Hide
+    RunWait, taskkill /F /IM Dropbox.exe,,Hide
     Sleep, 1500
 
     ; --- Close File Explorer windows individually ---
