@@ -1,0 +1,7 @@
+# AutoHotkey compiled output
+*.exe
+
+# Windows temp/backup files
+*.bak
+Thumbs.db
+desktop.ini
