@@ -25,7 +25,7 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 
 1. Self-elevate via UAC (`*RunAs`) if not already admin
 2. Disable Nagle's Algorithm (registry: `TcpAckFrequency=1`, `TCPNoDelay=1`)
-3. Close all apps — tray apps first (`Process, Close`), then visible windows, then force-kill stragglers
+3. Close all apps — stop DbxSvc, then kill tray apps via `taskkill /F` (wrapped in `cmd.exe /c`), then visible windows, then force-kill stragglers
 4. Run `Set-I226VProfile.ps1` with choice `1` (Gaming/ethernet profile)
 5. Enable Windows Game Mode (`AutoGameModeEnabled=1`)
 6. Launch `UnrealTournament.exe`, capture PID
@@ -40,8 +40,14 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 
 ## Key Implementation Notes
 
-### Tray apps need `Process, Close`
-`CloseAllApps()` filters out `WS_EX_TOOLWINDOW` windows (system tray utilities), so they are never reached by the `WinClose` / `WinKill` loops. Apps like PhraseExpress and Dropbox must be terminated explicitly with `Process, Close, processname.exe` at the top of `CloseAllApps()`.
+### Tray apps need `net stop` + `taskkill /F` via `cmd.exe /c`
+`CloseAllApps()` filters out `WS_EX_TOOLWINDOW` windows (system tray utilities), so they are never reached by the `WinClose` / `WinKill` loops. PhraseExpress and Dropbox must be killed explicitly at the top of `CloseAllApps()` using three `RunWait, cmd.exe /c ...,,Hide` calls:
+
+1. `net stop DbxSvc` — stops the Dropbox service first; without this, DbxSvc respawns `Dropbox.exe` immediately after `taskkill` kills it.
+2. `taskkill /F /IM phraseexpress.exe` — force-kills PhraseExpress (no watchdog service).
+3. `taskkill /F /IM Dropbox.exe` — kills all 9 Dropbox.exe instances now that the service is stopped.
+
+The `cmd.exe /c` wrapper is required — AHK's `RunWait` without it does not parse `/F` and `/IM` correctly. `net stop` does **not** accept a `/y` flag; omit it.
 
 ### `Process, WaitClose` instead of `WinWaitClose`
 AHK cannot find a trackable window for fullscreen DirectX games. `WinWaitClose` returns immediately. `Process, WaitClose, %ut_pid%` blocks until the EXE exits regardless of window state.

@@ -11,7 +11,7 @@ Before launching UT, the script applies a series of system optimizations to mini
 ### Optimizations applied at launch
 
 1. **Disable Nagle's Algorithm** — reduces network latency by disabling `TcpAckFrequency` and `TCPNoDelay` on all TCP interfaces.
-2. **Close all application windows** — closes PhraseExpress and Dropbox tray apps by process name, then gracefully closes all visible app windows (with a safelist of protected system processes), then force-kills anything still open.
+2. **Close all application windows** — stops the Dropbox service (`DbxSvc`) first, then force-kills PhraseExpress and all Dropbox processes via `taskkill`, then gracefully closes all visible app windows (with a safelist of protected system processes), then force-kills anything still open.
 3. **Ethernet adapter optimization** — enables optimal properties for the ethernet adapter for gaming.
 4. **Enable Windows Game Mode** — enables `AutoGameModeEnabled` via registry, disabling background services to free up resources.
 5. **Switch to Ultimate Performance power plan** — eliminates micro-latencies and frame-time stutters.
@@ -35,7 +35,7 @@ Before launching UT, the script applies a series of system optimizations to mini
 |---|---|---|
 | 1 | UAC Self-Elevation | Relaunches itself with admin privileges via `*RunAs` if not already running as administrator |
 | 2 | Nagle's Algorithm Toggle | Disables `TcpAckFrequency` and `TCPNoDelay` before launch; restores after UT exits |
-| 3 | Close All Application Windows | Closes PhraseExpress and Dropbox tray apps by process name first; then gracefully closes visible apps with a protected safelist; force-kills stragglers |
+| 3 | Close All Application Windows | Stops DbxSvc, then force-kills PhraseExpress and all Dropbox.exe instances via `taskkill`; then gracefully closes visible apps with a protected safelist; force-kills stragglers |
 | 4 | PowerShell Profile Script Execution | Runs an external `.ps1` script with stdin redirected from a temp file to pass menu choices without keyboard simulation |
 | 5 | Windows Game Mode Toggle | Enables `AutoGameModeEnabled` via registry before launch; disables after exit |
 | 6 | Ultimate Performance Power Plan | Switches to a custom Ultimate Performance power plan (by GUID) before launch |
