@@ -26,15 +26,17 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 1. Self-elevate via UAC (`*RunAs`) if not already admin
 2. Disable Nagle's Algorithm (registry: `TcpAckFrequency=1`, `TCPNoDelay=1`)
 3. Close all apps — stop DbxSvc, then kill tray apps via `taskkill /F` (wrapped in `cmd.exe /c`), then visible windows, then force-kill stragglers
-4. Run `Set-I226VProfile.ps1` with choice `1` (Gaming/ethernet profile)
-5. Enable Windows Game Mode (`AutoGameModeEnabled=1`)
-6. Launch `UnrealTournament.exe`, capture PID
-7. Wait 5 s, send `Escape` → `Alt+M` → `F` to navigate to Multiplayer → Find Internet Games
-8. `Process, WaitClose` on UT's PID until UT exits
-9. Disable Game Mode
-10. Re-enable Nagle's Algorithm
-11. Run `Set-I226VProfile.ps1` with choice `3` (restore profile)
-12. Show completion dialog
+4. Switch to Ultimate Performance power plan (`GUID_ULTIMATE`) — shows success/fail popup
+5. Run `Set-I226VProfile.ps1` with choice `1` (Gaming/ethernet profile)
+6. Enable Windows Game Mode (`AutoGameModeEnabled=1`)
+7. Launch `UnrealTournament.exe`, capture PID
+8. Wait 5 s, send `Escape` → `Alt+M` → `F` to navigate to Multiplayer → Find Internet Games
+9. `Process, WaitClose` on UT's PID until UT exits
+10. Disable Game Mode
+11. Re-enable Nagle's Algorithm
+12. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
+13. Run `Set-I226VProfile.ps1` with choice `3` (restore profile)
+14. Show completion dialog
 
 ---
 
@@ -76,9 +78,11 @@ File Explorer windows (class `CabinetWClass`) are closed separately via `WinGet,
 
 ---
 
-## Paths
+## Paths & GUIDs
 
 | Variable | Value |
 |---|---|
-| `PS_SCRIPT` | `D:\Dropbox\Computing1\BatchFiles_Scripts\PowershellScripts\Set-I226VProfile.ps1` |
+| `PS_SCRIPT` | `A_ScriptDir . "\Set-I226VProfile.ps1"` (local copy in script folder) |
 | `UT_EXE` | `C:\UnrealTournament\System\UnrealTournament.exe` |
+| `GUID_ULTIMATE` | `209bbce3-d696-4b47-b0cd-a7280a509878` (Ultimate Performance) |
+| `GUID_HIGH_PERF` | `8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c` (High Performance) |

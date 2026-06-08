@@ -28,11 +28,17 @@ if not A_IsAdmin {
 PS_SCRIPT := A_ScriptDir . "\Set-I226VProfile.ps1"
 UT_EXE    := "C:\UnrealTournament\System\UnrealTournament.exe"
 
+GUID_HIGH_PERF := "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+GUID_ULTIMATE  := "209bbce3-d696-4b47-b0cd-a7280a509878"
+
 ; ── STEP 1: Disable Nagle's Algorithm ──────────────────────────────────────
 DisableNaglesAlgorithm()
 
 ; ── STEP 2: Close all visible application windows ──────────────────────────
 CloseAllApps()
+
+; ── STEP 3: Switch to Ultimate Performance power plan ──────────────────────
+SwitchPowerPlanWithPopup("Ultimate Performance", GUID_ULTIMATE)
 
 ; ── STEPS 2-6: Profile script, choice 1 (Gaming) ───────────────────────────
 RunProfileScript(PS_SCRIPT, 1)
@@ -71,6 +77,9 @@ DisableGameMode()
 
 ; ── Enable Nagle's Algorithm ────────────────────────────────────────────────
 EnableNaglesAlgorithm()
+
+; ── Switch back to High Performance power plan ──────────────────────────────
+SwitchPowerPlanWithPopup("High Performance", GUID_HIGH_PERF)
 
 ; ── STEPS 12-14: Profile script, choice 3 ──────────────────────────────────
 RunProfileScript(PS_SCRIPT, 3)
@@ -237,6 +246,72 @@ EnableGameMode() {
 DisableGameMode() {
     ; Restores AutoGameModeEnabled=0 in HKCU after Unreal Tournament exits.
     RegWrite, REG_DWORD, HKEY_CURRENT_USER\Software\Microsoft\GameBar, AutoGameModeEnabled, 0
+}
+
+
+SwitchPowerPlanWithPopup(planName, planGuid) {
+    if (planGuid = "209bbce3-d696-4b47-b0cd-a7280a509878")
+        EnsureUltimatePerformanceExists()
+
+    success := SetActivePowerPlan(planGuid)
+    activeGuid := GetActivePowerPlanGuid()
+
+    if (success && StrLowerEx(activeGuid) = StrLowerEx(planGuid)) {
+        MsgBox, 64, Power Plan Switched, Power plan successfully switched to:`n`n%planName%
+    } else {
+        msg := "Failed to switch power plan to:`n`n" . planName
+        if (activeGuid != "")
+            msg .= "`n`nCurrent active GUID:`n" . activeGuid
+        else
+            msg .= "`n`nUnable to determine the currently active power plan."
+        MsgBox, 16, Power Plan Switch Failed, %msg%
+    }
+}
+
+EnsureUltimatePerformanceExists() {
+    plansText := GetPowerPlansText()
+    if InStr(StrLowerEx(plansText), "209bbce3-d696-4b47-b0cd-a7280a509878")
+        return true
+
+    RunWait, %ComSpec% /c powercfg -duplicatescheme 209bbce3-d696-4b47-b0cd-a7280a509878,, Hide
+    Sleep, 1000
+
+    plansText := GetPowerPlansText()
+    if InStr(StrLowerEx(plansText), "209bbce3-d696-4b47-b0cd-a7280a509878")
+        return true
+
+    return false
+}
+
+SetActivePowerPlan(planGuid) {
+    RunWait, %ComSpec% /c powercfg /S %planGuid%,, Hide
+    Sleep, 500
+    activeGuid := GetActivePowerPlanGuid()
+    return (StrLowerEx(activeGuid) = StrLowerEx(planGuid))
+}
+
+GetActivePowerPlanGuid() {
+    tempFile := A_Temp . "\active_power_plan.txt"
+    FileDelete, %tempFile%
+    RunWait, %ComSpec% /c powercfg /GETACTIVESCHEME > "%tempFile%",, Hide
+    FileRead, output, %tempFile%
+    FileDelete, %tempFile%
+    RegExMatch(output, "i)Power Scheme GUID:\s*([a-f0-9\-]+)", m)
+    return m1
+}
+
+GetPowerPlansText() {
+    tempFile := A_Temp . "\power_plans_list.txt"
+    FileDelete, %tempFile%
+    RunWait, %ComSpec% /c powercfg /L > "%tempFile%",, Hide
+    FileRead, output, %tempFile%
+    FileDelete, %tempFile%
+    return output
+}
+
+StrLowerEx(str) {
+    StringLower, out, str
+    return out
 }
 
 
