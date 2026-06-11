@@ -84,6 +84,9 @@ SwitchPowerPlanWithPopup("High Performance", GUID_HIGH_PERF)
 ; ── STEPS 12-14: Profile script, choice 3 ──────────────────────────────────
 RunProfileScript(PS_SCRIPT, 3)
 
+; ── Restore closed apps ─────────────────────────────────────────────────────
+RestoreApps()
+
 MsgBox, 64, Done, All steps completed successfully.
 ExitApp
 
@@ -312,6 +315,13 @@ GetPowerPlansText() {
 StrLowerEx(str) {
     StringLower, out, str
     return out
+}
+
+
+RestoreApps() {
+    RunWait, cmd.exe /c net start DbxSvc,,Hide
+    Run, "C:\Program Files (x86)\PhraseExpress\phraseexpress.exe"
+    Run, "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe" /home
 }
 
 

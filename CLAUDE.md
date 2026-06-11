@@ -36,7 +36,8 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 11. Re-enable Nagle's Algorithm
 12. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
 13. Run `Set-I226VProfile.ps1` with choice `3` (restore profile)
-14. Show completion dialog
+14. `RestoreApps()` — start DbxSvc, launch PhraseExpress, launch Dropbox `/home`
+15. Show completion dialog
 
 ---
 
@@ -72,6 +73,9 @@ Pipe-delimited list of process names that must never be closed:
 | `obs64.exe` | OBS Studio (intentionally kept running) |
 
 File Explorer windows (class `CabinetWClass`) are closed separately via `WinGet, List, ahk_class CabinetWClass` because `explorer.exe` must stay in the SafeList to protect the shell.
+
+### RestoreApps() — relaunch PhraseExpress and Dropbox after UT exits
+`RestoreApps()` is called after all cleanup steps complete. It runs `net start DbxSvc` (wrapped in `cmd.exe /c`) to restart the Dropbox service, then uses `Run` to launch PhraseExpress (`C:\Program Files (x86)\PhraseExpress\phraseexpress.exe`) and Dropbox (`C:\Program Files (x86)\Dropbox\Client\Dropbox.exe /home`). DbxSvc must be started before Dropbox.exe or the service will respawn its own instance and conflict.
 
 ### PowerShell scripts written to temp files
 `EnableNaglesAlgorithm()` and `DisableNaglesAlgorithm()` write a `.ps1` to `%TEMP%`, run it with `RunWait ... Hide`, then delete it. This avoids needing a separate file on disk.
