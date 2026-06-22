@@ -30,14 +30,16 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 5. Run `Set-I226VProfile.ps1` with choice `1` (Gaming/ethernet profile)
 6. Enable Windows Game Mode (`AutoGameModeEnabled=1`)
 7. Launch `UnrealTournament.exe`, capture PID
-8. Wait 5 s, send `Escape` → `Alt+M` → `F` to navigate to Multiplayer → Find Internet Games
-9. `Process, WaitClose` on UT's PID until UT exits
-10. Disable Game Mode
-11. Re-enable Nagle's Algorithm
-12. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
-13. Run `Set-I226VProfile.ps1` with choice `3` (restore profile)
-14. `RestoreApps()` — start DbxSvc, launch PhraseExpress, launch Dropbox `/home`
-15. Show completion dialog
+8. Launch `UT99_OneClickDodge.ahk` (step 8b) — `Sleep, 1000` to let it register hotkeys
+9. Wait 5 s, send `Escape` → `Alt+M` → `F` to navigate to Multiplayer → Find Internet Games
+10. `Process, WaitClose` on UT's PID until UT exits
+11. Close One-Click Dodge script via `WinClose` on its AHK window title
+12. Disable Game Mode
+13. Re-enable Nagle's Algorithm
+14. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
+15. Run `Set-I226VProfile.ps1` with choice `3` (restore profile)
+16. `RestoreApps()` — start DbxSvc, launch PhraseExpress, launch Dropbox `/home`
+17. Show completion dialog
 
 ---
 
@@ -73,6 +75,13 @@ Pipe-delimited list of process names that must never be closed:
 | `obs64.exe` | OBS Studio (intentionally kept running) |
 
 File Explorer windows (class `CabinetWClass`) are closed separately via `WinGet, List, ahk_class CabinetWClass` because `explorer.exe` must stay in the SafeList to protect the shell.
+
+### One-Click Dodge script — launch after UT, close after UT exits
+`UT99_OneClickDodge.ahk` is launched via `Run` immediately after UT starts (step 8b). Because the launcher already holds an elevated token, the dodge script inherits elevation automatically — no second UAC prompt. A `Sleep, 1000` follows to let it finish loading and register its hotkeys before UT takes focus.
+
+On exit, the script is closed with `WinClose, UT99_OneClickDodge_TapHold.ahk ahk_class AutoHotkey`. The window title must match the AHK script's title exactly; `ahk_class AutoHotkey` scopes the match to AHK windows only to avoid false positives.
+
+Path: `D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99 One-Click Dodge\UT99_OneClickDodge.ahk`
 
 ### RestoreApps() — relaunch PhraseExpress and Dropbox after UT exits
 `RestoreApps()` is called after all cleanup steps complete. It runs `net start DbxSvc` (wrapped in `cmd.exe /c`) to restart the Dropbox service, then uses `Run` to launch PhraseExpress (`C:\Program Files (x86)\PhraseExpress\phraseexpress.exe`) and Dropbox (`C:\Program Files (x86)\Dropbox\Client\Dropbox.exe /home`). DbxSvc must be started before Dropbox.exe or the service will respawn its own instance and conflict.
