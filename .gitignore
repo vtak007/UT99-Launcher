@@ -5,3 +5,6 @@
 *.bak
 Thumbs.db
 desktop.ini
+
+# Claude Code settings
+.claude/
