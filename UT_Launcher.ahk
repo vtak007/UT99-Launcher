@@ -77,7 +77,7 @@ Process, WaitClose, %ut_pid%
 Sleep, 2000
 
 ; ── Close One-Click Dodge script ───────────────────────────────────────────
-WinClose, UT99_OneClickDodge_TapHold.ahk ahk_class AutoHotkey
+WinClose, UT99_OneClickDodge.ahk ahk_class AutoHotkey
 
 ; ── Disable Game Mode ───────────────────────────────────────────────────────
 DisableGameMode()
