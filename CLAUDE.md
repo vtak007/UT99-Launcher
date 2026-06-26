@@ -31,9 +31,10 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 6. Enable Windows Game Mode (`AutoGameModeEnabled=1`)
 7. Launch `UnrealTournament.exe`, capture PID
 8. Launch `UT99_OneClickDodge.ahk` (step 8b) — `Sleep, 1000` to let it register hotkeys
-9. Wait 5 s, send `Escape` → `Alt+M` → `F` to navigate to Multiplayer → Find Internet Games
-10. `Process, WaitClose` on UT's PID until UT exits
-11. Close One-Click Dodge script via `WinClose` on its AHK window title
+9. Launch `UT99_WalkAndMoveForward.ahk` (step 8c) — `Sleep, 1000` to let it register hotkeys
+10. Wait 5 s, send `Escape` → `Alt+M` → `F` to navigate to Multiplayer → Find Internet Games
+11. `Process, WaitClose` on UT's PID until UT exits
+12. Close One-Click Dodge and Walk-and-Move-Forward scripts via `WinClose` on their AHK window titles
 12. Disable Game Mode
 13. Re-enable Nagle's Algorithm
 14. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
@@ -82,6 +83,13 @@ File Explorer windows (class `CabinetWClass`) are closed separately via `WinGet,
 On exit, the script is closed with `WinClose, UT99_OneClickDodge_TapHold.ahk ahk_class AutoHotkey`. The window title must match the AHK script's title exactly; `ahk_class AutoHotkey` scopes the match to AHK windows only to avoid false positives.
 
 Path: `D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99 One-Click Dodge\UT99_OneClickDodge.ahk`
+
+### Walk-and-Move-Forward script — launch after UT, close after UT exits
+`UT99_WalkAndMoveForward.ahk` is launched via `Run` immediately after the One-Click Dodge script (step 8c), inheriting the same elevated token (no second UAC prompt). It provides tap-to-autorun: tapping Mouse4 holds the `Backspace` key (bound to the `Walking` alias in `User.ini`) so the player keeps walking forward until any movement/action key — or a second Mouse4 tap — releases it.
+
+On exit it is closed with `WinClose, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey`.
+
+Path: `D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99 Walk and Move Forward\UT99_WalkAndMoveForward.ahk`
 
 ### RestoreApps() — relaunch PhraseExpress and Dropbox after UT exits
 `RestoreApps()` is called after all cleanup steps complete. It runs `net start DbxSvc` (wrapped in `cmd.exe /c`) to restart the Dropbox service, then uses `Run` to launch PhraseExpress (`C:\Program Files (x86)\PhraseExpress\phraseexpress.exe`) and Dropbox (`C:\Program Files (x86)\Dropbox\Client\Dropbox.exe /home`). DbxSvc must be started before Dropbox.exe or the service will respawn its own instance and conflict.
