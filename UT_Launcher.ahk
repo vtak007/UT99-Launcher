@@ -56,11 +56,11 @@ if (ErrorLevel || !ut_pid) {
 ; ── STEP 8b: Launch One-Click Dodge script (inherits elevated token) ───────
 ; The "Online" argument makes the dodge script skip its forward-mode dialog
 ; and use the smooth IG+ single-button forward dodge automatically.
-Run, "D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99 One-Click Dodge\UT99_OneClickDodge.ahk" Online
+Run, "D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99\UT99 One-Click Dodge\UT99_OneClickDodge.ahk" Online
 Sleep, 1000   ; give it a moment to register hotkeys
 
 ; ── STEP 8c: Launch Walk-and-Move-Forward autorun script (inherits elevated token) ──
-Run, "D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99 Walk and Move Forward\UT99_WalkAndMoveForward.ahk"
+Run, "D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99\UT99 Walk and Move Forward\UT99_WalkAndMoveForward.ahk"
 Sleep, 1000   ; give it a moment to register hotkeys
 
 ; ── STEP 9: Wait 5 seconds for UT to finish loading ───────────────────────
