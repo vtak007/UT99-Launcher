@@ -5,6 +5,7 @@
 
 # Windows temp/backup files
 *.bak
+*.lnk
 Thumbs.db
 desktop.ini
 
