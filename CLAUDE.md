@@ -5,6 +5,7 @@
 | File | Purpose |
 |---|---|
 | `UT_Launcher.ahk` | Main AutoHotkey script — launches and configures Unreal Tournament |
+| `SoundVolumeView.exe` | NirSoft utility (bundled/committed) — switches the default playback device |
 | `Readme.md` | Project readme — describes all optimizations and features |
 
 ---
@@ -29,12 +30,14 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 4. Switch to Ultimate Performance power plan (`GUID_ULTIMATE`) — shows success/fail popup
 5. Run `Set-I226VProfile.ps1` with choice `1` (Gaming/ethernet profile)
 6. Enable Windows Game Mode (`AutoGameModeEnabled=1`)
+6b. Switch default playback device to Headphones via `SoundVolumeView.exe` (step 7b in code)
 7. Launch `UnrealTournament.exe`, capture PID
 8. Launch `UT99_OneClickDodge.ahk` (step 8b) — `Sleep, 1000` to let it register hotkeys
 9. Launch `UT99_WalkAndMoveForward.ahk` (step 8c) — `Sleep, 1000` to let it register hotkeys
 10. Wait 5 s, send `Escape` → `Alt+M` → `F` to navigate to Multiplayer → Find Internet Games
 11. `Process, WaitClose` on UT's PID until UT exits
 12. Close One-Click Dodge and Walk-and-Move-Forward scripts via `WinClose` on their AHK window titles
+12b. Restore default playback device to Speakers via `SoundVolumeView.exe`
 12. Disable Game Mode
 13. Re-enable Nagle's Algorithm
 14. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
@@ -91,6 +94,18 @@ On exit it is closed with `WinClose, UT99_WalkAndMoveForward.ahk ahk_class AutoH
 
 Path: `D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99\UT99 Walk and Move Forward\UT99_WalkAndMoveForward.ahk`
 
+### Audio device switch — Headphones on launch, Speakers on exit
+`SwitchAudioDevice(svvExe, deviceId)` sets the default playback device using the bundled `SoundVolumeView.exe` (NirSoft): `SoundVolumeView.exe /SetDefault "<id>" all`. The `all` argument sets every role (Console, Multimedia, Communications) in one call. The function guards with `FileExist` and shows a warning MsgBox (without aborting the launch) if the exe is missing.
+
+Targets are **Command-Line Friendly IDs**, not plain names, because duplicate `Headphones`/`Speakers` device entries exist and plain-name matching is ambiguous. Obtain IDs with `SoundVolumeView.exe /scomma out.csv` and read the `Command-Line Friendly ID` column.
+
+| Variable | Value |
+|---|---|
+| `AUDIO_GAME` | `Arctis Nova Pro\Device\Headphones\Render` |
+| `AUDIO_RESTORE` | `Realtek USB Audio\Device\Speakers\Render` |
+
+`SoundVolumeView.exe` is committed to the repo despite the `*.exe` gitignore rule via a `!SoundVolumeView.exe` exception.
+
 ### RestoreApps() — relaunch PhraseExpress and Dropbox after UT exits
 `RestoreApps()` is called after all cleanup steps complete. It runs `net start DbxSvc` (wrapped in `cmd.exe /c`) to restart the Dropbox service, then uses `Run` to launch PhraseExpress (`C:\Program Files (x86)\PhraseExpress\phraseexpress.exe`) and Dropbox (`C:\Program Files (x86)\Dropbox\Client\Dropbox.exe /home`). DbxSvc must be started before Dropbox.exe or the service will respawn its own instance and conflict.
 
@@ -104,6 +119,7 @@ Path: `D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99\UT99 Walk a
 | Variable | Value |
 |---|---|
 | `PS_SCRIPT` | `A_ScriptDir . "\Set-I226VProfile.ps1"` (local copy in script folder) |
+| `SVV_EXE` | `A_ScriptDir . "\SoundVolumeView.exe"` (bundled NirSoft audio-switch helper) |
 | `UT_EXE` | `C:\UnrealTournament\System\UnrealTournament.exe` |
 | `GUID_ULTIMATE` | `209bbce3-d696-4b47-b0cd-a7280a509878` (Ultimate Performance) |
 | `GUID_HIGH_PERF` | `8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c` (High Performance) |

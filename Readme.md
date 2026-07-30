@@ -17,11 +17,13 @@ Before launching UT, the script applies a series of system optimizations to mini
 5. **Switch to Ultimate Performance power plan** — eliminates micro-latencies and frame-time stutters.
 6. **Launch One-Click Dodge script** — starts `UT99_OneClickDodge.ahk` alongside UT; inherits the elevated token so no second UAC prompt is needed.
 7. **Launch Walk-and-Move-Forward script** — starts `UT99_WalkAndMoveForward.ahk` alongside UT (tap-to-autorun); inherits the elevated token so no second UAC prompt is needed.
+8. **Switch playback device to Headphones** — sets the default audio output to the headset via bundled `SoundVolumeView.exe` (all roles: Console/Multimedia/Communications).
 
 ### At exit (automatic restore)
 
 - One-Click Dodge script closed
 - Walk-and-Move-Forward script closed
+- Playback device switched back to Speakers
 - Nagle's Algorithm re-enabled
 - Game Mode disabled
 - Power plan reverted to High Performance
@@ -43,6 +45,7 @@ Before launching UT, the script applies a series of system optimizations to mini
 | 7 | Unreal Tournament Launch | Runs the UT executable, captures its PID for tracking; shows an error dialog if launch fails |
 | 8 | One-Click Dodge Integration | Launches `UT99_OneClickDodge.ahk` immediately after UT starts; inherits elevated token (no second UAC prompt); closed automatically when UT exits |
 | 8b | Walk-and-Move-Forward Integration | Launches `UT99_WalkAndMoveForward.ahk` immediately after UT starts (tap-to-autorun); inherits elevated token (no second UAC prompt); closed automatically when UT exits |
+| 8c | Audio Device Switch | Switches the default playback device to Headphones before launch and back to Speakers after exit, via bundled `SoundVolumeView.exe` targeting Command-Line Friendly IDs (all roles) |
 | 9 | Game Navigation Automation | After a 5-second load wait, sends keystrokes (Escape, Alt+M, F) to skip the intro and navigate to Multiplayer → Find Internet Games |
 | 10 | Process-Based Exit Detection | Uses `Process, WaitClose` instead of `WinWaitClose` to reliably detect UT exit in fullscreen DirectX mode |
 | 11 | High Performance Power Plan Restore | Reverts to the High Performance power plan (by GUID) after UT exits; shows success/fail popup |

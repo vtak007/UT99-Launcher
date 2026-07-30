@@ -28,6 +28,13 @@ if not A_IsAdmin {
 PS_SCRIPT := A_ScriptDir . "\Set-I226VProfile.ps1"
 UT_EXE    := "C:\UnrealTournament\System\UnrealTournament.exe"
 
+; SoundVolumeView.exe (NirSoft) lives in the script folder; used to switch the
+; default playback device.  Targets use Command-Line Friendly IDs (not plain
+; names) so duplicate "Headphones"/"Speakers" entries can't be mis-matched.
+SVV_EXE       := A_ScriptDir . "\SoundVolumeView.exe"
+AUDIO_GAME    := "Arctis Nova Pro\Device\Headphones\Render"
+AUDIO_RESTORE := "Realtek USB Audio\Device\Speakers\Render"
+
 GUID_HIGH_PERF := "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
 GUID_ULTIMATE  := "209bbce3-d696-4b47-b0cd-a7280a509878"
 
@@ -45,6 +52,9 @@ RunProfileScript(PS_SCRIPT, 1)
 
 ; ── STEP 7: Enable Game Mode ────────────────────────────────────────────────
 EnableGameMode()
+
+; ── STEP 7b: Switch default playback device to Headphones ──────────────────
+SwitchAudioDevice(SVV_EXE, AUDIO_GAME)
 
 ; ── STEP 8: Launch Unreal Tournament ───────────────────────────────────────
 Run, %UT_EXE%,,, ut_pid
@@ -87,6 +97,9 @@ WinClose, UT99_OneClickDodge.ahk ahk_class AutoHotkey
 
 ; ── Close Walk-and-Move-Forward autorun script ─────────────────────────────
 WinClose, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey
+
+; ── Restore default playback device to Speakers ────────────────────────────
+SwitchAudioDevice(SVV_EXE, AUDIO_RESTORE)
 
 ; ── Disable Game Mode ───────────────────────────────────────────────────────
 DisableGameMode()
@@ -253,6 +266,18 @@ DisableNaglesAlgorithm() {
     FileAppend, Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces' | ForEach-Object {`n    Set-ItemProperty -Path $_.PSPath -Name TcpAckFrequency -Value 1 -Type DWord -Force`n    Set-ItemProperty -Path $_.PSPath -Name TCPNoDelay -Value 1 -Type DWord -Force`n}, %psFile%
     RunWait, powershell.exe -ExecutionPolicy Bypass -File "%psFile%",,Hide
     FileDelete, %psFile%
+}
+
+
+SwitchAudioDevice(svvExe, deviceId) {
+    ; Sets the default playback device using SoundVolumeView (NirSoft).
+    ; "all" sets every role (Console, Multimedia, Communications) in one call.
+    ; deviceId is a Command-Line Friendly ID, e.g. "Arctis Nova Pro\Device\Headphones\Render".
+    if !FileExist(svvExe) {
+        MsgBox, 48, Audio Switch Skipped, SoundVolumeView.exe not found:`n%svvExe%`n`nDefault playback device was not changed.
+        return
+    }
+    RunWait, "%svvExe%" /SetDefault "%deviceId%" all,, Hide
 }
 
 

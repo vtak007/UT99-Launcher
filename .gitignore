@@ -1,5 +1,7 @@
 # AutoHotkey compiled output
 *.exe
+# ...except the bundled NirSoft audio-switch helper
+!SoundVolumeView.exe
 
 # Windows temp/backup files
 *.bak
