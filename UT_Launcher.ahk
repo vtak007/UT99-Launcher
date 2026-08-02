@@ -50,9 +50,6 @@ SwitchPowerPlanWithPopup("Ultimate Performance", GUID_ULTIMATE)
 ; ── STEPS 2-6: Profile script, choice 1 (Gaming) ───────────────────────────
 RunProfileScript(PS_SCRIPT, 1)
 
-; ── STEP 7: Enable Game Mode ────────────────────────────────────────────────
-EnableGameMode()
-
 ; ── STEP 7b: Switch default playback device to Headphones ──────────────────
 SwitchAudioDevice(SVV_EXE, AUDIO_GAME)
 
@@ -100,9 +97,6 @@ WinClose, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey
 
 ; ── Restore default playback device to Speakers ────────────────────────────
 SwitchAudioDevice(SVV_EXE, AUDIO_RESTORE)
-
-; ── Disable Game Mode ───────────────────────────────────────────────────────
-DisableGameMode()
 
 ; ── Enable Nagle's Algorithm ────────────────────────────────────────────────
 EnableNaglesAlgorithm()
@@ -280,17 +274,6 @@ SwitchAudioDevice(svvExe, deviceId) {
     RunWait, "%svvExe%" /SetDefault "%deviceId%" all,, Hide
 }
 
-
-EnableGameMode() {
-    ; Sets AutoGameModeEnabled=1 in HKCU so Windows activates Game Mode
-    ; when Unreal Tournament launches.
-    RegWrite, REG_DWORD, HKEY_CURRENT_USER\Software\Microsoft\GameBar, AutoGameModeEnabled, 1
-}
-
-DisableGameMode() {
-    ; Restores AutoGameModeEnabled=0 in HKCU after Unreal Tournament exits.
-    RegWrite, REG_DWORD, HKEY_CURRENT_USER\Software\Microsoft\GameBar, AutoGameModeEnabled, 0
-}
 
 
 SwitchPowerPlanWithPopup(planName, planGuid) {

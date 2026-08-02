@@ -29,8 +29,7 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 3. Close all apps — stop DbxSvc, then kill tray apps via `taskkill /F` (wrapped in `cmd.exe /c`), then visible windows, then force-kill stragglers
 4. Switch to Ultimate Performance power plan (`GUID_ULTIMATE`) — shows success/fail popup
 5. Run `Set-I226VProfile.ps1` with choice `1` (Gaming/ethernet profile)
-6. Enable Windows Game Mode (`AutoGameModeEnabled=1`)
-6b. Switch default playback device to Headphones via `SoundVolumeView.exe` (step 7b in code)
+6. Switch default playback device to Headphones via `SoundVolumeView.exe` (step 7b in code)
 7. Launch `UnrealTournament.exe`, capture PID
 8. Launch `UT99_OneClickDodge.ahk` (step 8b) — `Sleep, 1000` to let it register hotkeys
 9. Launch `UT99_WalkAndMoveForward.ahk` (step 8c) — `Sleep, 1000` to let it register hotkeys
@@ -38,7 +37,6 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 11. `Process, WaitClose` on UT's PID until UT exits
 12. Close One-Click Dodge and Walk-and-Move-Forward scripts via `WinClose` on their AHK window titles
 12b. Restore default playback device to Speakers via `SoundVolumeView.exe`
-12. Disable Game Mode
 13. Re-enable Nagle's Algorithm
 14. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
 15. Run `Set-I226VProfile.ps1` with choice `3` (restore profile)
