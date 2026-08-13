@@ -35,6 +35,7 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 9. Launch `UT99_WalkAndMoveForward.ahk` (step 8c) — `Sleep, 1000` to let it register hotkeys
 10. Wait 5 s, send `Escape` → `Alt+M` → `F` to navigate to Multiplayer → Find Internet Games
 11. `Process, WaitClose` on UT's PID until UT exits
+11b. MsgBox prompts **Restart** vs **Shutdown**. Restart loops back to step 6 (relaunch UT), skipping all cleanup below. Shutdown breaks out and continues to step 12. Steps 6-11b run inside a `Loop { }` block; the One-Click Dodge and Walk-and-Move-Forward scripts (step 8b/8c) launch once, before the loop, and are not relaunched on Restart.
 12. Close One-Click Dodge and Walk-and-Move-Forward scripts via `WinClose` on their AHK window titles
 12b. Restore default playback device to Speakers via `SoundVolumeView.exe`
 13. Re-enable Nagle's Algorithm
@@ -77,6 +78,26 @@ Pipe-delimited list of process names that must never be closed:
 | `obs64.exe` | OBS Studio (intentionally kept running) |
 
 File Explorer windows (class `CabinetWClass`) are closed separately via `WinGet, List, ahk_class CabinetWClass` because `explorer.exe` must stay in the SafeList to protect the shell.
+
+### `DetectHiddenWindows, On` is required to close the helper scripts
+Both `UT99_OneClickDodge.ahk` (launched with the `Online` argument) and
+`UT99_WalkAndMoveForward.ahk` never show a Gui, so their AHK main window stays
+**hidden**. AHK's `WinClose`/`WinExist`/`WinWaitClose` ignore hidden windows
+unless `DetectHiddenWindows, On` is set — without it, the `WinClose` calls at
+shutdown are silent no-ops and both scripts are left running in the tray
+forever. This was confirmed empirically (live `WinExist` returned `0x0` for
+both scripts' windows with detection off, and found+closed them instantly
+with it on) and is set once near the top of `UT_Launcher.ahk`, alongside
+`SetTitleMatchMode, 2`. Their `ahk_class` is `AutoHotkey` (not
+`AutoHotkeyGUI`) — confirmed via live `EnumWindows`/`GetClassName`.
+
+### Restart / Shutdown prompt — loop around the launch/wait steps
+After `Process, WaitClose` detects UT has exited, a MsgBox (Yes/No) asks
+whether to **Restart** (relaunch UT immediately, `Continue` back to the top of
+the `Loop`) or **Shutdown** (`break` out and run the full cleanup/restore
+sequence). The One-Click Dodge and Walk-and-Move-Forward scripts are launched
+once, *before* the loop — they don't depend on UT's process, so a Restart
+doesn't relaunch or interrupt them.
 
 ### One-Click Dodge script — launch after UT, close after UT exits
 `UT99_OneClickDodge.ahk` is launched via `Run` immediately after UT starts (step 8b). Because the launcher already holds an elevated token, the dodge script inherits elevation automatically — no second UAC prompt. A `Sleep, 1000` follows to let it finish loading and register its hotkeys before UT takes focus.

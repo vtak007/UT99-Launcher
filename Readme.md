@@ -18,7 +18,17 @@ Before launching UT, the script applies a series of system optimizations to mini
 6. **Launch Walk-and-Move-Forward script** — starts `UT99_WalkAndMoveForward.ahk` alongside UT (tap-to-autorun); inherits the elevated token so no second UAC prompt is needed.
 7. **Switch playback device to Headphones** — sets the default audio output to the headset via bundled `SoundVolumeView.exe` (all roles: Console/Multimedia/Communications).
 
-### At exit (automatic restore)
+### When UT exits
+
+A prompt asks whether to **Restart** or **Shutdown**:
+
+- **Restart** — relaunches UT immediately (re-runs the menu navigation) and skips
+  straight back into the wait-for-exit loop. No cleanup/restore runs. The One-Click
+  Dodge and Walk-and-Move-Forward scripts stay running throughout — they don't
+  depend on UT's process, so they aren't relaunched.
+- **Shutdown** — runs the full cleanup/restore sequence below.
+
+### At exit (automatic restore, Shutdown only)
 
 - One-Click Dodge script closed
 - Walk-and-Move-Forward script closed
@@ -48,3 +58,4 @@ Before launching UT, the script applies a series of system optimizations to mini
 | 10 | High Performance Power Plan Restore | Reverts to the High Performance power plan (by GUID) after UT exits; shows success/fail popup |
 | 11 | Restore Closed Apps | After all cleanup steps, restarts DbxSvc via `net start`, then relaunches PhraseExpress and Dropbox (`/home`) |
 | 12 | Temp File Cleanup | All intermediate temp files (PowerShell scripts, input files, saved state) are created and deleted within their respective functions |
+| 13 | Restart / Shutdown Prompt | After UT exits, a MsgBox offers Restart (relaunch UT, skip cleanup) or Shutdown (run full cleanup/restore); implemented as a loop around the launch/wait steps |

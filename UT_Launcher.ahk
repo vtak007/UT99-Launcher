@@ -17,6 +17,7 @@
 #NoEnv
 #SingleInstance Force
 SetTitleMatchMode, 2
+DetectHiddenWindows, On
 SetWorkingDir, %A_ScriptDir%
 
 ; Self-elevate via UAC if not already running as administrator (AHK v1 method)
@@ -53,16 +54,11 @@ RunProfileScript(PS_SCRIPT, 1)
 ; ── STEP 7b: Switch default playback device to Headphones ──────────────────
 SwitchAudioDevice(SVV_EXE, AUDIO_GAME)
 
-; ── STEP 8: Launch Unreal Tournament ───────────────────────────────────────
-Run, %UT_EXE%,,, ut_pid
-if (ErrorLevel || !ut_pid) {
-    MsgBox, 16, Error, Failed to launch Unreal Tournament.`nPath: %UT_EXE%
-    ExitApp
-}
-
 ; ── STEP 8b: Launch One-Click Dodge script (inherits elevated token) ───────
 ; The "Online" argument makes the dodge script skip its forward-mode dialog
 ; and use the smooth IG+ single-button forward dodge automatically.
+; Launched once, outside the restart loop below — it does not depend on the
+; UT process and should keep running across a Restart.
 Run, "D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99\UT99 One-Click Dodge\UT99_OneClickDodge.ahk" Online
 Sleep, 1000   ; give it a moment to register hotkeys
 
@@ -70,30 +66,62 @@ Sleep, 1000   ; give it a moment to register hotkeys
 Run, "D:\Dropbox\Computing1\BatchFiles_Scripts\Claude Projects\UT99\UT99 Walk and Move Forward\UT99_WalkAndMoveForward.ahk"
 Sleep, 1000   ; give it a moment to register hotkeys
 
-; ── STEP 9: Wait 5 seconds for UT to finish loading ───────────────────────
-Sleep, 5000
+; ── STEPS 8-11: Launch UT, wait for exit, then offer Restart vs Shutdown ───
+; Choosing Restart loops back to relaunch UT immediately, skipping all
+; cleanup/restore steps below. Choosing Shutdown breaks out and runs the
+; full cleanup/restore sequence exactly as before.
+Loop
+{
+    ; ── STEP 8: Launch Unreal Tournament ───────────────────────────────────
+    Run, %UT_EXE%,,, ut_pid
+    if (ErrorLevel || !ut_pid) {
+        MsgBox, 16, Error, Failed to launch Unreal Tournament.`nPath: %UT_EXE%
+        ExitApp
+    }
 
-; ── STEP 10: Skip intro video, open Multiplayer → Find Internet Games ───────
-WinActivate, ahk_pid %ut_pid%
-WinWaitActive, ahk_pid %ut_pid%,, 10
-Send, {Escape}
-Sleep, 1000
-Send, !m
-Sleep, 500
-Send, f
+    ; ── STEP 9: Wait 5 seconds for UT to finish loading ─────────────────────
+    Sleep, 5000
 
-; ── STEP 11: Wait for Unreal Tournament to close ───────────────────────────
-; WinWaitClose is unreliable for fullscreen DirectX games — AHK cannot find
-; a trackable window and returns immediately.  Process, WaitClose monitors
-; the process directly and waits until the EXE exits, regardless of window state.
-Process, WaitClose, %ut_pid%
-Sleep, 2000
+    ; ── STEP 10: Skip intro video, open Multiplayer → Find Internet Games ───
+    WinActivate, ahk_pid %ut_pid%
+    WinWaitActive, ahk_pid %ut_pid%,, 10
+    Send, {Escape}
+    Sleep, 1000
+    Send, !m
+    Sleep, 500
+    Send, f
+
+    ; ── STEP 11: Wait for Unreal Tournament to close ─────────────────────────
+    ; WinWaitClose is unreliable for fullscreen DirectX games — AHK cannot find
+    ; a trackable window and returns immediately.  Process, WaitClose monitors
+    ; the process directly and waits until the EXE exits, regardless of window state.
+    Process, WaitClose, %ut_pid%
+    Sleep, 2000
+
+    ; ── Restart vs Shutdown prompt ───────────────────────────────────────────
+    MsgBox, 4, UT Exited, UT has exited.`n`nYes = Restart UT now (skip cleanup)`nNo = Shutdown (run full cleanup/restore sequence)
+    IfMsgBox, Yes
+        Continue
+    else
+        break
+}
 
 ; ── Close One-Click Dodge script ───────────────────────────────────────────
+; Confirmed via live window enumeration (EnumWindows/GetClassName) that AHK
+; v1.1.37's auto-generated main window class is "AutoHotkey" — the original
+; class name was correct. WinKill is a fallback that force-terminates the
+; process if it doesn't close within the wait (belt-and-braces; the real fix
+; is below).
 WinClose, UT99_OneClickDodge.ahk ahk_class AutoHotkey
+WinWaitClose, UT99_OneClickDodge.ahk ahk_class AutoHotkey,, 3
+if WinExist("UT99_OneClickDodge.ahk ahk_class AutoHotkey")
+    WinKill, UT99_OneClickDodge.ahk ahk_class AutoHotkey
 
 ; ── Close Walk-and-Move-Forward autorun script ─────────────────────────────
 WinClose, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey
+WinWaitClose, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey,, 3
+if WinExist("UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey")
+    WinKill, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey
 
 ; ── Restore default playback device to Speakers ────────────────────────────
 SwitchAudioDevice(SVV_EXE, AUDIO_RESTORE)
