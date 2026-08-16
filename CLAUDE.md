@@ -5,8 +5,8 @@
 | File | Purpose |
 |---|---|
 | `UT_Launcher.ahk` | Main AutoHotkey script — launches and configures Unreal Tournament |
-| `SoundVolumeView.exe` | NirSoft utility (bundled/committed) — switches the default playback device |
-| `Readme.md` | Project readme — describes all optimizations and features |
+| `SoundVolumeView.exe` | NirSoft utility — switches the default playback device. **Not tracked in this repo**; download from [NirSoft](https://www.nirsoft.net/utils/sound_volume_view.html) and place next to `UT_Launcher.ahk` |
+| `README.md` | Project readme — describes all optimizations and features |
 
 ---
 
@@ -123,7 +123,7 @@ Targets are **Command-Line Friendly IDs**, not plain names, because duplicate `H
 | `AUDIO_GAME` | `Arctis Nova Pro\Device\Headphones\Render` |
 | `AUDIO_RESTORE` | `Realtek USB Audio\Device\Speakers\Render` |
 
-`SoundVolumeView.exe` is committed to the repo despite the `*.exe` gitignore rule via a `!SoundVolumeView.exe` exception.
+`SoundVolumeView.exe` is documented as an external dependency in the README rather than committed to the repo — download it from NirSoft and place it next to `UT_Launcher.ahk`.
 
 ### RestoreApps() — relaunch PhraseExpress and Dropbox after UT exits
 `RestoreApps()` is called after all cleanup steps complete. It runs `net start DbxSvc` (wrapped in `cmd.exe /c`) to restart the Dropbox service, then uses `Run` to launch PhraseExpress (`C:\Program Files (x86)\PhraseExpress\phraseexpress.exe`) and Dropbox (`C:\Program Files (x86)\Dropbox\Client\Dropbox.exe /home`). DbxSvc must be started before Dropbox.exe or the service will respawn its own instance and conflict.

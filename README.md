@@ -16,7 +16,7 @@ Before launching UT, the script applies a series of system optimizations to mini
 4. **Switch to Ultimate Performance power plan** — eliminates micro-latencies and frame-time stutters.
 5. **Launch One-Click Dodge script** — starts `UT99_OneClickDodge.ahk` alongside UT; inherits the elevated token so no second UAC prompt is needed.
 6. **Launch Walk-and-Move-Forward script** — starts `UT99_WalkAndMoveForward.ahk` alongside UT (tap-to-autorun); inherits the elevated token so no second UAC prompt is needed.
-7. **Switch playback device to Headphones** — sets the default audio output to the headset via bundled `SoundVolumeView.exe` (all roles: Console/Multimedia/Communications).
+7. **Switch playback device to Headphones** — sets the default audio output to the headset via [`SoundVolumeView.exe`](https://www.nirsoft.net/utils/sound_volume_view.html) (NirSoft; not included in this repo — see [Dependencies](#dependencies)) (all roles: Console/Multimedia/Communications).
 
 ### When UT exits
 
@@ -52,10 +52,18 @@ A prompt asks whether to **Restart** or **Shutdown**:
 | 6 | Unreal Tournament Launch | Runs the UT executable, captures its PID for tracking; shows an error dialog if launch fails |
 | 7 | One-Click Dodge Integration | Launches `UT99_OneClickDodge.ahk` immediately after UT starts; inherits elevated token (no second UAC prompt); closed automatically when UT exits |
 | 7b | Walk-and-Move-Forward Integration | Launches `UT99_WalkAndMoveForward.ahk` immediately after UT starts (tap-to-autorun); inherits elevated token (no second UAC prompt); closed automatically when UT exits |
-| 7c | Audio Device Switch | Switches the default playback device to Headphones before launch and back to Speakers after exit, via bundled `SoundVolumeView.exe` targeting Command-Line Friendly IDs (all roles) |
+| 7c | Audio Device Switch | Switches the default playback device to Headphones before launch and back to Speakers after exit, via `SoundVolumeView.exe` (downloaded separately — see [Dependencies](#dependencies)) targeting Command-Line Friendly IDs (all roles) |
 | 8 | Game Navigation Automation | After a 5-second load wait, sends keystrokes (Escape, Alt+M, F) to skip the intro and navigate to Multiplayer → Find Internet Games |
 | 9 | Process-Based Exit Detection | Uses `Process, WaitClose` instead of `WinWaitClose` to reliably detect UT exit in fullscreen DirectX mode |
 | 10 | High Performance Power Plan Restore | Reverts to the High Performance power plan (by GUID) after UT exits; shows success/fail popup |
 | 11 | Restore Closed Apps | After all cleanup steps, restarts DbxSvc via `net start`, then relaunches PhraseExpress and Dropbox (`/home`) |
 | 12 | Temp File Cleanup | All intermediate temp files (PowerShell scripts, input files, saved state) are created and deleted within their respective functions |
 | 13 | Restart / Shutdown Prompt | After UT exits, a MsgBox offers Restart (relaunch UT, skip cleanup) or Shutdown (run full cleanup/restore); implemented as a loop around the launch/wait steps |
+
+---
+
+## Dependencies
+
+| Tool | Source | Setup |
+|---|---|---|
+| `SoundVolumeView.exe` | [NirSoft](https://www.nirsoft.net/utils/sound_volume_view.html) | Download and place `SoundVolumeView.exe` in the same folder as `UT_Launcher.ahk`. Not included in this repo. |
