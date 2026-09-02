@@ -35,9 +35,10 @@ See `CLAUDE.md` for the full launch sequence and implementation notes.
 - **AHK v1 only** — no v2 syntax (fat-arrow, `{}` function bodies, object clipboard).
 - **Correct paths / GUIDs** live in the `Paths & GUIDs` table in `CLAUDE.md`
   (`UT_EXE`, `PS_SCRIPT`, `SVV_EXE`, power-plan GUIDs).
-- **`SoundVolumeView.exe` is committed** despite the `*.exe` gitignore rule via a
-  `!SoundVolumeView.exe` exception. Audio targets are Command-Line Friendly IDs,
-  not plain names (duplicate Headphones/Speakers entries exist).
+- **`SoundVolumeView.exe` is NOT committed** — it's an external NirSoft download,
+  documented in `CLAUDE.md`/`README.md`; `.gitignore`'s `*.exe` rule has no
+  exception for it. Audio targets are Command-Line Friendly IDs, not plain
+  names (duplicate Headphones/Speakers entries exist).
 - **Pre-commit doc-update rule** (from global + project `CLAUDE.md`): update
   `Readme.md` and `CLAUDE.md` only *after* the user has tested and approved a
   change; never commit before that doc step is confirmed. Code is branched first,
