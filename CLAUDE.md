@@ -40,7 +40,7 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 12b. Restore default playback device to Speakers via `SoundVolumeView.exe`
 13. Re-enable Nagle's Algorithm
 14. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
-15. Run `Set-I226VProfile.ps1` with choice `3` (restore profile)
+15. Run `Set-I226VProfile.ps1` with choice `2` (Balanced/restore profile)
 16. `RestoreApps()` — start DbxSvc, launch PhraseExpress, launch Dropbox `/home`
 17. Show completion dialog
 

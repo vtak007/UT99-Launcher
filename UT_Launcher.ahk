@@ -7,7 +7,7 @@
 ;   3.  Launch Unreal Tournament
 ;   4.  Wait 5 s, Alt+Enter (fullscreen), ESC
 ;   5.  Wait for UT to close
-;   6.  Run Set-I226VProfile.ps1  →  choose 3  →  wait  →  Enter
+;   6.  Run Set-I226VProfile.ps1  →  choose 2  →  wait  →  Enter
 ;
 ; IMPORTANT: The script self-elevates on startup. Windows will show
 ; ONE UAC prompt when you launch this script.  Click "Yes" and the
@@ -132,8 +132,8 @@ EnableNaglesAlgorithm()
 ; ── Switch back to High Performance power plan ──────────────────────────────
 SwitchPowerPlanWithPopup("High Performance", GUID_HIGH_PERF)
 
-; ── STEPS 12-14: Profile script, choice 3 ──────────────────────────────────
-RunProfileScript(PS_SCRIPT, 3)
+; ── STEPS 12-14: Profile script, choice 2 ──────────────────────────────────
+RunProfileScript(PS_SCRIPT, 2)
 
 ; ── Restore closed apps ─────────────────────────────────────────────────────
 RestoreApps()
