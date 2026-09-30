@@ -48,6 +48,9 @@ CloseAllApps()
 ; ── STEP 3: Switch to Ultimate Performance power plan ──────────────────────
 SwitchPowerPlanWithPopup("Ultimate Performance", GUID_ULTIMATE)
 
+; ── Enable Game Mode ───────────────────────────────────────────────────────
+EnableGameMode()
+
 ; ── STEPS 2-6: Profile script, choice 1 (Gaming) ───────────────────────────
 RunProfileScript(PS_SCRIPT, 1)
 
@@ -122,6 +125,9 @@ WinClose, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey
 WinWaitClose, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey,, 3
 if WinExist("UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey")
     WinKill, UT99_WalkAndMoveForward.ahk ahk_class AutoHotkey
+
+; ── Disable Game Mode ──────────────────────────────────────────────────────
+DisableGameMode()
 
 ; ── Restore default playback device to Speakers ────────────────────────────
 SwitchAudioDevice(SVV_EXE, AUDIO_RESTORE)
@@ -290,6 +296,17 @@ DisableNaglesAlgorithm() {
     FileDelete, %psFile%
 }
 
+
+EnableGameMode() {
+    ; Sets AutoGameModeEnabled=1 in HKCU so Windows activates Game Mode
+    ; when Unreal Tournament launches.
+    RegWrite, REG_DWORD, HKEY_CURRENT_USER\Software\Microsoft\GameBar, AutoGameModeEnabled, 1
+}
+
+DisableGameMode() {
+    ; Restores AutoGameModeEnabled=0 in HKCU after Unreal Tournament exits.
+    RegWrite, REG_DWORD, HKEY_CURRENT_USER\Software\Microsoft\GameBar, AutoGameModeEnabled, 0
+}
 
 SwitchAudioDevice(svvExe, deviceId) {
     ; Sets the default playback device using SoundVolumeView (NirSoft).

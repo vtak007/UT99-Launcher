@@ -28,6 +28,7 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 2. Disable Nagle's Algorithm (registry: `TcpAckFrequency=1`, `TCPNoDelay=1`)
 3. Close all apps — stop DbxSvc, then kill tray apps via `taskkill /F` (wrapped in `cmd.exe /c`), then visible windows, then force-kill stragglers
 4. Switch to Ultimate Performance power plan (`GUID_ULTIMATE`) — shows success/fail popup
+4b. Enable Windows Game Mode (`AutoGameModeEnabled=1` under `HKCU\Software\Microsoft\GameBar`)
 5. Run `Set-I226VProfile.ps1` with choice `1` (Gaming/ethernet profile)
 6. Switch default playback device to Headphones via `SoundVolumeView.exe` (step 7b in code)
 7. Launch `UnrealTournament.exe`, capture PID
@@ -37,6 +38,7 @@ Single-file AutoHotkey v1 script that prepares Windows for low-latency gaming, l
 11. `Process, WaitClose` on UT's PID until UT exits
 11b. MsgBox prompts **Restart** vs **Shutdown**. Restart loops back to step 6 (relaunch UT), skipping all cleanup below. Shutdown breaks out and continues to step 12. Steps 6-11b run inside a `Loop { }` block; the One-Click Dodge and Walk-and-Move-Forward scripts (step 8b/8c) launch once, before the loop, and are not relaunched on Restart.
 12. Close One-Click Dodge and Walk-and-Move-Forward scripts via `WinClose` on their AHK window titles
+12a. Disable Game Mode (`AutoGameModeEnabled=0`)
 12b. Restore default playback device to Speakers via `SoundVolumeView.exe`
 13. Re-enable Nagle's Algorithm
 14. Switch back to High Performance power plan (`GUID_HIGH_PERF`) — shows success/fail popup
@@ -124,6 +126,9 @@ Targets are **Command-Line Friendly IDs**, not plain names, because duplicate `H
 | `AUDIO_RESTORE` | `Realtek USB Audio\Device\Speakers\Render` |
 
 `SoundVolumeView.exe` is documented as an external dependency in the README rather than committed to the repo — download it from NirSoft and place it next to `UT_Launcher.ahk`.
+
+### Game Mode — enabled before launch, disabled on Shutdown only
+`EnableGameMode()` / `DisableGameMode()` write `AutoGameModeEnabled` (REG_DWORD 1 / 0) to `HKEY_CURRENT_USER\Software\Microsoft\GameBar`. Enable runs once before the launch loop (after the Ultimate Performance plan); disable runs in the post-loop cleanup, so it is skipped on Restart like every other restore step. The Settings → Gaming → Game Mode page can show a stale toggle if it was already open — close and reopen it to verify.
 
 ### RestoreApps() — relaunch PhraseExpress and Dropbox after UT exits
 `RestoreApps()` is called after all cleanup steps complete. It runs `net start DbxSvc` (wrapped in `cmd.exe /c`) to restart the Dropbox service, then uses `Run` to launch PhraseExpress (`C:\Program Files (x86)\PhraseExpress\phraseexpress.exe`) and Dropbox (`C:\Program Files (x86)\Dropbox\Client\Dropbox.exe /home`). DbxSvc must be started before Dropbox.exe or the service will respawn its own instance and conflict.

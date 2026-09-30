@@ -30,6 +30,11 @@ See `CLAUDE.md` for the full launch sequence and implementation notes.
   `AutoHotkey`. The real bug was `DetectHiddenWindows` (see above), not the
   class name — don't re-chase this one.
 
+- **"Game Mode not disabled on exit" was a stale Settings page.**
+  `AutoGameModeEnabled` does drive the Settings → Gaming → Game Mode toggle and
+  `DisableGameMode()` does write `0`; the Settings window had simply been left
+  open. Close/reopen the page before concluding the toggle is broken.
+
 ## PROJECT CONVENTIONS
 
 - **AHK v1 only** — no v2 syntax (fat-arrow, `{}` function bodies, object clipboard).
@@ -46,6 +51,9 @@ See `CLAUDE.md` for the full launch sequence and implementation notes.
 
 ## CHANGE LOG
 
+- 2026-09-30 — Restored the Windows Game Mode toggle removed in `483612a`
+  (`EnableGameMode()`/`DisableGameMode()` and their calls); tested working.
+  Branch `restore-game-mode`.
 - 2026-08-13 — Added Restart/Shutdown prompt after UT exits (loop around
   launch/wait steps); fixed `WinClose` never closing the helper scripts by
   adding `DetectHiddenWindows, On`. Branch `add-restart-option`.
