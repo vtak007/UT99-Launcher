@@ -5,7 +5,7 @@
 ;   1.  Close all open application windows
 ;   2.  Run Set-I226VProfile.ps1  →  choose 1  →  wait  →  Enter
 ;   3.  Launch Unreal Tournament
-;   4.  Wait 5 s, Alt+Enter (fullscreen), ESC
+;   4.  Wait 5 s, then ESC → Alt+M → F  (Multiplayer → Find Internet Games)
 ;   5.  Wait for UT to close
 ;   6.  Run Set-I226VProfile.ps1  →  choose 2  →  wait  →  Enter
 ;
