@@ -35,6 +35,13 @@ See `CLAUDE.md` for the full launch sequence and implementation notes.
   `DisableGameMode()` does write `0`; the Settings window had simply been left
   open. Close/reopen the page before concluding the toggle is broken.
 
+- **Clicking the Favorites tab via `ImageSearch` is abandoned, not broken.**
+  `favorites_tab.png` was a screenshot used to locate and click UT's Favorites
+  tab. That approach stopped working (engine-rendered menus shift with
+  resolution/menu skin) and was replaced by keystroke navigation
+  (`{Escape}` → `!m` → `f`). The png was removed on 2026-10-31; don't
+  reintroduce image-based menu clicking without discussing it first.
+
 ## PROJECT CONVENTIONS
 
 - **AHK v1 only** — no v2 syntax (fat-arrow, `{}` function bodies, object clipboard).
@@ -50,6 +57,13 @@ See `CLAUDE.md` for the full launch sequence and implementation notes.
   merged with `--no-ff`.
 
 ## CHANGE LOG
+
+- 2026-10-31 — Removed orphaned `favorites_tab.png` (leftover from the
+  abandoned Favorites-tab `ImageSearch` navigation) and corrected the stale
+  step 4 in `UT_Launcher.ahk`'s header comment, which still described
+  "Alt+Enter (fullscreen), ESC" instead of the ESC → Alt+M → F keystrokes
+  actually sent at STEP 10. Tested working. Branch
+  `remove-orphaned-favorites-png`.
 
 - 2026-09-30 — Restored the Windows Game Mode toggle removed in `483612a`
   (`EnableGameMode()`/`DisableGameMode()` and their calls); tested working.
